@@ -389,7 +389,7 @@ export default function LearningHub() {
                 <div className="space-y-4 mb-6">
                   {analogies.map((text, i) => (
                     <motion.div key={`${activeModule}-${i}`} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.15 }}>
-                      <button onClick={() => setExpandedAnalogy(expandedAnalogy === i ? -1 : i)} className="w-full text-left">
+                      <div role="button" tabIndex={0} onClick={() => setExpandedAnalogy(expandedAnalogy === i ? -1 : i)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setExpandedAnalogy(expandedAnalogy === i ? -1 : i); }} className="w-full text-left cursor-pointer">
                         <div className="flex gap-3">
                           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-green to-neon-purple flex items-center justify-center shrink-0 shadow-lg shadow-neon-green/10">
                             <Bot size={20} className="text-background" />
@@ -416,7 +416,7 @@ export default function LearningHub() {
                             </div>
                           </div>
                         </div>
-                      </button>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
