@@ -381,6 +381,120 @@ pub struct Counter {
   },
 ];
 
+/* ───────── Turkish analogies ───────── */
+const analogiesTr: Record<number, Record<Language, string[]>> = {
+  0: { // Variables & Mutability
+    javascript: [
+      "JavaScript'te değişkenleri `let`, `const` veya `var` ile tanımlarsınız. Rust da `let` kullanır — ama fark şu: **tüm değişkenler varsayılan olarak değiştirilemez**.",
+      "Rust'ta `let x: i32 = 5` JavaScript'teki `const x = 5` gibidir — `let mut x = 5` demediğiniz sürece değiştiremezsiniz.",
+      "Rust'ta `null` veya `undefined` yoktur. Bunun yerine `Option<T>` kullanılır — TypeScript'teki `T | null` gibi ama derleyici tarafından zorlanır.",
+    ],
+    python: [
+      "Python'da sadece `x = 5` yazarsınız. Rust benzer şekilde `let x = 5` kullanır, ama türleri belirtebilirsiniz: `let x: i32 = 5`.",
+      "Python'da değişkenler varsayılan olarak değiştirilebilir. Rust'ta tam tersi — `mut` eklemezseniz **değiştirilemez**: `let mut counter = 0;`.",
+      "Python'daki `None` yerine Rust `Option<T>` kullanır. Derleyici kontrolü atlamanıza izin vermez.",
+    ],
+    csharp: [
+      "C#'ta `int x = 5;` vardır — Rust neredeyse aynıdır: `let x: i32 = 5;`. İki nokta üst üste ile tür belirtme tanıdık gelecektir.",
+      "C#'ta `readonly` ve değiştirilebilir alanlar arasında seçersiniz. Rust'ta **her şey varsayılan olarak salt okunur**. `let mut x = 5;` kullanın.",
+      "C#'ın nullable türleri `int?` Rust'taki `Option<i32>` gibidir. Ama Rust açmanızı zorlar — artık `NullReferenceException` sürprizi yok!",
+    ],
+    none: [
+      "Bir **değişken** etiketli bir saklama kutusu gibidir. Ona bir isim verip içine bir değer koyarsınız: `let name = \"Alice\";`",
+      "Varsayılan olarak, kutuya bir şey koyduğunuzda değiştiremezsiniz. Buna **değiştirilemezlik** denir. Değiştirmeniz gerekirse `mut` ekleyin: `let mut score = 0;`",
+      "Her kutunun belirli bir **türü** vardır — `i32` tam sayıları, `bool` doğru/yanlış değerlerini, `String` metni tutar.",
+    ],
+  },
+  1: { // Structs & Enums
+    javascript: [
+      "Rust `struct`'ı **derleme zamanında sabit şekli olan** bir JavaScript nesnesi gibidir. TypeScript `interface`'inin şablon oluşturduğunu düşünün.",
+      "Rust `enum`'u sabitlerden çok daha güçlüdür — her varyant farklı veri tutabilir! TypeScript ayrımlı birleşimi gibi düşünün.",
+      "Metotlar `impl` blokları kullanır — `Person.prototype.greet = function()` tanımlamak gibi ama daha temiz.",
+    ],
+    python: [
+      "Rust struct'ı Python `@dataclass` gibidir — isimli alanlar ve türlerle veri şablonu tanımlar.",
+      "Rust enum'ları Python'un `enum.Enum`'unun güçlendirilmiş halidir — her varyant farklı veri türleri taşıyabilir.",
+      "Metotlar `impl Person { ... }` blokları ile eklenir — Python sınıfı içinde metot tanımlamaya benzer.",
+    ],
+    csharp: [
+      "Rust struct'ları C# `record` türlerine çok benzer — isimli alanlarla özel veri tanımlar.",
+      "Rust enum'ları C# ayrımlı birlesimleri gibidir. Her varyant ayrı bir durumdur.",
+      "C# sınıflarının aksine, Rust struct'larında **kalıtım yoktur**. Paylaşılan davranış için **trait'ler** (arayüzler gibi) kullanın.",
+    ],
+    none: [
+      "Bir **struct** tarif kartı gibidir — bir şeyin ihtiyaç duyduğu tüm malzemeleri (alanları) listeler.",
+      "Bir **enum** trafik lambası gibidir — yalnızca birkaç belirli seçenekten biri olabilir: Kırmızı, Sarı veya Yeşil.",
+      "Bir tarifiniz (struct) olunca, bir tane yapabilirsiniz: `let alice = Person { name: String::from(\"Alice\"), age: 25 };`",
+    ],
+  },
+  2: { // Ownership & Borrowing
+    javascript: [
+      "JavaScript'te çöp toplayıcı belleği yönetir. Rust'ta **çöp toplayıcı yoktur** — bunun yerine derleme zamanında zorlanan **sahiplik kuralları** kullanır.",
+      "Sahipliği fiziksel bir kitap vermek gibi düşünün. Rust'ta bir değeri başka bir değişkene 'verdiğinizde', orijinali artık kullanamaz — buna **taşıma** denir.",
+      "**Ödünç alma** (`&`) kitabınızı ödünç vermek gibidir — birinin okumasına izin verirsiniz ama hâlâ sahibi sizsiniz.",
+    ],
+    python: [
+      "Python bellek için referans sayımı + GC kullanır. Rust bellek güvenliğini **derleme zamanında** sıfır çalışma maliyetiyle **sahiplik** ile sağlar.",
+      "Python'da `b = a` yaptığınızda ikisi aynı nesneyi gösterir. Rust'ta `let b = a;` sahipliği **taşır** — `a` artık geçerli değildir!",
+      "**Referanslar** (`&value`) paylaşılan bir referansı okumak gibidir — Rust birçok okuyucu VEYA bir yazıcı olabileceğini, asla ikisinin aynı anda olamayacağını zorlar.",
+    ],
+    csharp: [
+      "C#'ın GC'si belleği çalışma zamanında yönetir. Rust'ın **sahiplik sistemi** aynı şeyi derleme zamanında yapar — sıfır ek yük.",
+      "Sahipliği C#'ın `using` ifadesi gibi ama otomatik düşünün. Bir değişken kapsamdan çıkınca Rust hemen bırakır — her yerde `IDisposable` gibi.",
+      "**Ödünç alma** `ref` parametresi geçirmek gibidir — fonksiyon sahiplik almadan veriyi kullanabilir.",
+    ],
+    none: [
+      "**Sahiplik** Rust'ın süper gücüdür. Her veri parçasının tam olarak BİR sahibi vardır. Sahip gittiğinde, veri otomatik olarak temizlenir.",
+      "Bir oyuncağınız olduğunu düşünün. Arkadaşınıza **verebilirsiniz** (taşıma) — artık oynayamazsınız. Veya **ödünç verebilirsiniz** (ödünç alma) — kullanır ve geri verir.",
+      "`&` ile **ödünç alma** \"bak ama dokunma\" demektir. `&mut` ile ödünç alma \"değiştirebilirsin ama sadece sen\" demektir.",
+    ],
+  },
+  3: { // Traits & Implementations
+    javascript: [
+      "Rust **trait'leri** TypeScript arayüzleri gibidir — bir türün uygulaması gereken metot sözleşmesini tanımlar.",
+      "Rust'ta sınıflar olmadığı için, trait'ler kalıtımın yerini alır. Bir struct üzerinde birden fazla arayüz uygulamak gibi düşünün.",
+      "Trait sınırları (`fn process<T: Display>(item: T)`) TypeScript'teki kısıtlı jenerikler gibidir: `function process<T extends Displayable>(item: T)`.",
+    ],
+    python: [
+      "Trait'ler Python'un Soyut Temel Sınıfları (`ABC`) gibidir. Bir türün **uygulaması gereken** metotları tanımlar.",
+      "Python ördek tiplemesi kullanır — `.quack()` varsa ördektir. Rust trait'leri bunu açık yapar ve derleme zamanında kontrol eder.",
+      "`#[derive(Debug, Clone)]` ile trait türetme Python'un `@dataclass`'ının `__repr__` ve `__copy__` otomatik oluşturması gibidir.",
+    ],
+    csharp: [
+      "Rust **trait'leri** neredeyse C# **arayüzleriyle** aynıdır — türlerin uygulaması gereken metot imzalarını tanımlar.",
+      "Rust'ta sınıf veya kalıtım olmadığı için, `impl Trait for Struct`'ı C#'taki `class MyStruct : IMyInterface` gibi düşünün.",
+      "`#[derive(Debug)]` ile trait türetme C# kaynak oluşturucularının sizin için `ToString()` otomatik uygulaması gibidir.",
+    ],
+    none: [
+      "Bir **trait** iş tanımı gibidir — bir türün hangi yeteneklere sahip olması gerektiğini söyler.",
+      "Herhangi bir struct trait'i uygulayarak 'işe başvurabilir'. Birden fazla struct aynı trait'i uygulayabilir!",
+      "`#[derive(Debug)]` sihirli bir kısayoldur — struct'ınıza hata ayıklama için kendini yazdırmayı otomatik öğretir.",
+    ],
+  },
+  4: { // Solana & Anchor
+    javascript: [
+      "Solana programı blockchain üzerinde yaşayan bir **sunucusuz fonksiyon** (Vercel/AWS Lambda) gibidir. Herkes çağırabilir.",
+      "`#[program]` makrosu Express.js'teki `app.use()` gibidir — çerçeveye bunların uç noktalarınız olduğunu söyler.",
+      "Anchor blockchain için Next.js gibidir — ortak kodu halleder, siz mantığa odaklanırsınız. TypeScript istemci kodunu otomatik oluşturur!",
+    ],
+    python: [
+      "Solana programını blockchain üzerindeki bir **FastAPI uygulaması** gibi düşünün. Her fonksiyon herkesin çağırabileceği bir API uç noktasıdır.",
+      "`#[program]` makrosu Flask'ın `@app.route()` dekoratörü gibidir — fonksiyonları herkese açık çağrılabilir olarak işaretler.",
+      "Anchor serileştirmeyi otomatik halleder, tıpkı FastAPI'deki Pydantic modelleri gibi.",
+    ],
+    csharp: [
+      "Solana programı blockchain üzerindeki bir **ASP.NET Web API denetleyicisi** gibidir. Her fonksiyon bir uç noktadır.",
+      "`#[program]` özniteliği `[ApiController]` gibidir — bir modülü giriş noktası olarak işaretler.",
+      "Anchor blockchain için Entity Framework gibidir — Rust struct'larını zincir üstü depolamaya eşler.",
+    ],
+    none: [
+      "Solana **programı** otomat gibidir — otomatik çalışan kurallar. İşlem gönderin, programlandığı şeyi yapar.",
+      "Programlar blockchain üzerinde yaşar — tek bir kişi onları kontrol etmez. Dağıtıldıktan sonra 7/24 çalışırlar.",
+      "Anchor program oluşturmayı çok kolaylaştıran yardımcı bir araç setidir. Karmaşık kısımları halleder!",
+    ],
+  },
+};
+
 export default function LearningHub() {
   const { selectedLanguage, languageLabel, setView, completedModules, completeModule, t, locale } = useApp();
   const lang = selectedLanguage || "none";
@@ -389,7 +503,9 @@ export default function LearningHub() {
   const [expandedAnalogy, setExpandedAnalogy] = useState(0);
 
   const mod = modules[activeModule];
-  const analogies = mod.analogies[lang];
+  const analogies = locale === "tr" && analogiesTr[activeModule]?.[lang]
+    ? analogiesTr[activeModule][lang]
+    : mod.analogies[lang];
 
   const handleModuleChange = (index: number) => {
     setActiveModule(index);
