@@ -35,6 +35,10 @@ export function applyDagreLayout(
     if (node.type === "templateNode") h = 150;
     // Function nodes with body might be taller
     if (node.type === "functionNode") h = 200;
+    // PDA nodes have seeds list + bump toggle
+    if (node.type === "pdaNode") h = 220;
+    // CPI nodes have accounts + program/instruction fields
+    if (node.type === "cpiNode") h = 240;
     g.setNode(node.id, { width: w, height: h });
   }
 

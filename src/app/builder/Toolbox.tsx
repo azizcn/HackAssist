@@ -11,6 +11,8 @@ import {
   ChevronDown,
   ChevronRight,
   Blocks,
+  KeyRound,
+  Link2,
 } from "lucide-react";
 import { useState, type DragEvent } from "react";
 import { useApp } from "../context/AppContext";
@@ -59,12 +61,12 @@ const CATEGORIES: ToolboxCategory[] = [
     items: [
       {
         type: "structNode",
-        label: "State Struct",
-        labelTr: "State Struct",
+        label: "State Account",
+        labelTr: "State Hesabı",
         icon: Database,
         color: "#14f195",
         defaultData: {
-          label: "State Struct",
+          label: "State Account",
           structName: "MyState",
           fields: [{ name: "id", type: "u64" }],
           nodeCategory: "state",
@@ -91,15 +93,47 @@ const CATEGORIES: ToolboxCategory[] = [
     items: [
       {
         type: "functionNode",
-        label: "Function",
-        labelTr: "Fonksiyon",
+        label: "Instruction",
+        labelTr: "Talimat",
         icon: Code2,
         color: "#f0f056",
         defaultData: {
-          label: "Function",
-          functionName: "my_function",
+          label: "Instruction",
+          functionName: "my_instruction",
           body: "Ok(())",
           connectedContext: "",
+        },
+      },
+    ],
+  },
+  {
+    key: "advanced",
+    labelKey: "builder.cat.advanced",
+    items: [
+      {
+        type: "pdaNode",
+        label: "PDA (Program Derived Address)",
+        labelTr: "PDA (Program Türetilmiş Adres)",
+        icon: KeyRound,
+        color: "#06b6d4",
+        defaultData: {
+          label: "PDA",
+          pdaName: "my_pda",
+          seeds: ["seed"],
+          bump: true,
+        },
+      },
+      {
+        type: "cpiNode",
+        label: "CPI (Cross-Program Invocation)",
+        labelTr: "CPI (Çapraz Program Çağrısı)",
+        icon: Link2,
+        color: "#f43f5e",
+        defaultData: {
+          label: "CPI",
+          targetProgram: "Token Program",
+          instruction: "transfer",
+          accounts: [{ name: "from", type: "AccountInfo<'info>" }],
         },
       },
     ],
@@ -145,6 +179,7 @@ export default function Toolbox() {
     templates: true,
     structures: true,
     logic: true,
+    advanced: true,
     actions: true,
   });
 

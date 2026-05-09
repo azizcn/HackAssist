@@ -84,8 +84,8 @@ function TemplateNode({ id, data, selected }: NodeProps<TemplateNodeType>) {
         {/* Description */}
         <div className="px-3 py-2 text-xs text-muted leading-relaxed">
           {isCoin
-            ? "Generates a full SPL token contract with mint, transfer, and burn instructions."
-            : "Generates an NFT minting contract with metadata and collection support."}
+            ? "Generates a full SPL Token Solana Program with mint, transfer, and burn Instructions."
+            : "Generates an NFT minting Solana Program with metadata and collection support."}
         </div>
 
         {/* Expand Button */}

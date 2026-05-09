@@ -34,7 +34,29 @@ export interface TemplateNodeData {
   [key: string]: unknown;
 }
 
-export type BuilderNodeData = StructNodeData | FunctionNodeData | ActionNodeData | TemplateNodeData;
+export interface PDANodeData {
+  label: string;
+  pdaName: string;
+  seeds: string[];
+  bump: boolean;
+  [key: string]: unknown;
+}
+
+export interface CPINodeData {
+  label: string;
+  targetProgram: string;
+  instruction: string;
+  accounts: StructField[];
+  [key: string]: unknown;
+}
+
+export type BuilderNodeData =
+  | StructNodeData
+  | FunctionNodeData
+  | ActionNodeData
+  | TemplateNodeData
+  | PDANodeData
+  | CPINodeData;
 
 // ---------------------------------------------------------------------------
 // Helper: indent a block of text
@@ -58,7 +80,7 @@ export function generateAnchorCode(nodes: Node[], edges: Edge[]): string {
   lines.push('declare_id!("YOUR_PROGRAM_ID_HERE");');
   lines.push("");
 
-  // ── Collect struct nodes ─────────────────────────────────────────────
+  // ── Collect nodes by type ───────────────────────────────────────────
   const stateStructs = nodes.filter(
     (n) => n.type === "structNode" && (n.data as StructNodeData).nodeCategory === "state"
   );
@@ -67,8 +89,21 @@ export function generateAnchorCode(nodes: Node[], edges: Edge[]): string {
   );
   const functionNodes = nodes.filter((n) => n.type === "functionNode");
   const actionNodes = nodes.filter((n) => n.type === "actionNode");
+  const pdaNodes = nodes.filter((n) => n.type === "pdaNode");
 
-  // ── State structs ────────────────────────────────────────────────────
+  // ── PDA seed constants ──────────────────────────────────────────────
+  for (const node of pdaNodes) {
+    const d = node.data as PDANodeData;
+    const name = d.pdaName || "my_pda";
+    lines.push(`// ── PDA: ${name} ──`);
+    lines.push(`// Seeds: [${d.seeds.map((s) => `b"${s}"`).join(", ")}]`);
+    if (d.seeds.length > 0) {
+      lines.push(`pub const ${name.toUpperCase()}_SEED: &[u8] = b"${d.seeds[0]}";`);
+    }
+    lines.push("");
+  }
+
+  // ── State structs (Accounts) ────────────────────────────────────────
   for (const node of stateStructs) {
     const d = node.data as StructNodeData;
     const name = d.structName || "MyState";
@@ -83,12 +118,35 @@ export function generateAnchorCode(nodes: Node[], edges: Edge[]): string {
     lines.push("");
   }
 
-  // ── Context structs ──────────────────────────────────────────────────
+  // ── Context structs (#[derive(Accounts)]) ───────────────────────────
   for (const node of contextStructs) {
     const d = node.data as StructNodeData;
     const name = d.structName || "MyContext";
+
+    // Check if any PDA node is connected to this context
+    const connectedPdas = pdaNodes.filter((pda) =>
+      edges.some(
+        (e) =>
+          (e.source === pda.id && e.target === node.id) ||
+          (e.target === pda.id && e.source === node.id)
+      )
+    );
+
     lines.push("#[derive(Accounts)]");
     lines.push(`pub struct ${name}<'info> {`);
+
+    // Add PDA account constraints if connected
+    for (const pda of connectedPdas) {
+      const pd = pda.data as PDANodeData;
+      const seedsStr = pd.seeds.map((s) => `b"${s}"`).join(", ");
+      if (pd.bump) {
+        lines.push(`    #[account(seeds = [${seedsStr}], bump)]`);
+      } else {
+        lines.push(`    #[account(seeds = [${seedsStr}])]`);
+      }
+      lines.push(`    pub ${pd.pdaName || "pda_account"}: AccountInfo<'info>,`);
+    }
+
     for (const f of d.fields) {
       if (f.name && f.type) {
         lines.push(`    pub ${f.name}: ${f.type},`);
@@ -119,7 +177,22 @@ export function generateAnchorCode(nodes: Node[], edges: Edge[]): string {
     }
   }
 
-  // ── Program module ───────────────────────────────────────────────────
+  // ── Collect CPI code blocks for functions ───────────────────────────
+  const fnToCpi: Record<string, CPINodeData[]> = {};
+  for (const edge of edges) {
+    const sourceNode = nodes.find((n) => n.id === edge.source);
+    const targetNode = nodes.find((n) => n.id === edge.target);
+    if (sourceNode?.type === "cpiNode" && targetNode?.type === "functionNode") {
+      if (!fnToCpi[targetNode.id]) fnToCpi[targetNode.id] = [];
+      fnToCpi[targetNode.id].push(sourceNode.data as CPINodeData);
+    }
+    if (targetNode?.type === "cpiNode" && sourceNode?.type === "functionNode") {
+      if (!fnToCpi[sourceNode.id]) fnToCpi[sourceNode.id] = [];
+      fnToCpi[sourceNode.id].push(targetNode.data as CPINodeData);
+    }
+  }
+
+  // ── Program module ──────────────────────────────────────────────────
   if (functionNodes.length > 0 || actionNodes.length > 0) {
     lines.push("#[program]");
     lines.push("pub mod my_program {");
@@ -132,6 +205,24 @@ export function generateAnchorCode(nodes: Node[], edges: Edge[]): string {
       const ctxName = fnToCtx[node.id] || d.connectedContext || "MyContext";
       const body = d.body?.trim() || "Ok(())";
       lines.push(`    pub fn ${fname}(ctx: Context<${ctxName}>) -> Result<()> {`);
+
+      // Insert CPI invocations if connected
+      const cpis = fnToCpi[node.id];
+      if (cpis && cpis.length > 0) {
+        for (const cpi of cpis) {
+          lines.push(`        // CPI: invoke ${cpi.instruction} on ${cpi.targetProgram}`);
+          lines.push(`        let cpi_program = ctx.accounts.${cpi.targetProgram.toLowerCase().replace(/\s+/g, "_")}.to_account_info();`);
+          lines.push(`        let cpi_accounts = ${cpi.instruction}CpiAccounts {`);
+          for (const acc of cpi.accounts) {
+            lines.push(`            ${acc.name}: ctx.accounts.${acc.name}.to_account_info(),`);
+          }
+          lines.push("        };");
+          lines.push(`        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);`);
+          lines.push(`        ${cpi.targetProgram.toLowerCase().replace(/\s+/g, "_")}::${cpi.instruction}(cpi_ctx)?;`);
+          lines.push("");
+        }
+      }
+
       lines.push(indent(body, 8));
       lines.push("    }");
       lines.push("");
@@ -158,7 +249,7 @@ export function generateAnchorCode(nodes: Node[], edges: Edge[]): string {
         lines.push("");
       } else if (d.actionType === "mint") {
         lines.push("    pub fn mint_token(ctx: Context<MintCtx>, amount: u64) -> Result<()> {");
-        lines.push("        // Mint tokens using the token program");
+        lines.push("        // Mint tokens using the SPL Token Program");
         lines.push("        token::mint_to(");
         lines.push("            CpiContext::new(");
         lines.push("                ctx.accounts.token_program.to_account_info(),");

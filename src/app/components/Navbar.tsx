@@ -41,6 +41,7 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
+    { label: "🥷 Dojo", href: "/dojo", icon: Blocks, show: true },
     { label: t("nav.blockchain101") || "Blockchain 101", href: "/blockchain101", icon: Library, show: true },
     { label: t("nav.builder") || "Builder", href: "/builder", icon: Blocks, show: true },
     { label: t("nav.learningHub"), href: "/learn", icon: BookOpen, show: !!selectedLanguage },
