@@ -45,7 +45,9 @@ export interface PDANodeData {
 export interface CPINodeData {
   label: string;
   targetProgram: string;
+  programName?: string;
   instruction: string;
+  action?: string;
   accounts: StructField[];
   [key: string]: unknown;
 }
@@ -220,8 +222,8 @@ export function generateAnchorCode(nodes: Node[], edges: Edge[]): string {
       const cpis = fnToCpi[node.id];
       if (cpis && cpis.length > 0) {
         for (const cpi of cpis) {
-          const prog = cpi.programName || cpi.targetProgram || "token_program";
-          const act = cpi.action || cpi.instruction || "transfer";
+          const prog = String(cpi.programName || cpi.targetProgram || "token_program");
+          const act = String(cpi.action || cpi.instruction || "transfer");
           lines.push(`        // CPI: invoke ${act} on ${prog}`);
           lines.push(`        let cpi_program = ctx.accounts.${prog.toLowerCase().replace(/\s+/g, "_")}.to_account_info();`);
           lines.push(`        let cpi_accounts = ${act}CpiAccounts {`);
