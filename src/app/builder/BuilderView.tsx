@@ -18,6 +18,7 @@ import CanvasToolbar from "./CanvasToolbar";
 import AIImportModal from "./AIImportModal";
 import AITutorPanel from "./AITutorPanel";
 import NodeEditModal from "./NodeEditModal";
+import SolanaSensei from "../dojo/SolanaSensei";
 
 import StructNode from "./nodes/StructNode";
 import FunctionNode from "./nodes/FunctionNode";
@@ -329,6 +330,7 @@ function BuilderCanvas() {
 
       <AIImportModal isOpen={aiModalOpen} onClose={() => setAiModalOpen(false)} onImport={handleAIImport} />
       <NodeEditModal node={editModalNode} onClose={() => setEditModalNodeId(null)} onSave={handleSaveNodeEdit} />
+      <SolanaSensei />
 
       {/* Toast container */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 items-center">

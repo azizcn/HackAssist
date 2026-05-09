@@ -3,7 +3,8 @@
 import { memo, useCallback } from "react";
 import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
 import { motion } from "framer-motion";
-import { Database, Plus, Trash2, Shield } from "lucide-react";
+import { Database, Plus, Trash2, Shield, HelpCircle } from "lucide-react";
+import { useTutorialStore } from "../../dojo/useTutorialStore";
 import type { StructNodeData, StructField } from "../codegen";
 import DeleteButton from "./DeleteButton";
 
@@ -115,6 +116,17 @@ function StructNode({ id, data, selected }: NodeProps<StructNodeType>) {
           >
             {isContext ? "CTX" : "STATE"}
           </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const store = useTutorialStore.getState();
+              store.triggerSenseiHelp(isContext ? "sensei.topic.isSigner" : "sensei.topic.isMut");
+            }}
+            className="w-5 h-5 rounded-full bg-neon-purple/20 text-neon-purple flex items-center justify-center hover:bg-neon-purple hover:text-white transition-colors"
+            title="Ask Sensei"
+          >
+            <HelpCircle size={10} />
+          </button>
         </div>
 
         {/* Struct Name Input */}

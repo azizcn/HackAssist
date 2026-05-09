@@ -3,7 +3,8 @@
 import { memo } from "react";
 import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
 import { motion } from "framer-motion";
-import { Database, Shield, Code2 } from "lucide-react";
+import { Database, Shield, Code2, HelpCircle } from "lucide-react";
+import { useTutorialStore } from "../useTutorialStore";
 
 interface TutorialNodeData {
   label: string;
@@ -72,6 +73,23 @@ function TutorialBulletNode({ data, selected }: NodeProps<TutorialNodeType>) {
               textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>
             {badge}
           </div>
+          
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const store = useTutorialStore.getState();
+              const topic = nodeCategory === "state" ? "sensei.topic.isMut" 
+                : nodeCategory === "context" ? "sensei.topic.isSigner"
+                : originalType === "pdaNode" ? "sensei.topic.pdaSeeds"
+                : "sensei.topic.instructionName";
+              store.triggerSenseiHelp(topic);
+            }}
+            className="w-5 h-5 rounded-full bg-neon-purple/20 text-neon-purple flex items-center justify-center hover:bg-neon-purple hover:text-white transition-colors"
+            title="Ask Sensei"
+          >
+            <HelpCircle size={10} />
+          </button>
+
           <motion.div className="ml-auto"
             animate={{ rotate: [0, 10, -10, 0] }}
             transition={{ duration: 0.5, delay: 0.2 }}>

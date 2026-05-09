@@ -3,7 +3,8 @@
 import { memo, useCallback } from "react";
 import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
 import { motion } from "framer-motion";
-import { Code2 } from "lucide-react";
+import { Code2, HelpCircle } from "lucide-react";
+import { useTutorialStore } from "../../dojo/useTutorialStore";
 import type { FunctionNodeData } from "../codegen";
 import DeleteButton from "./DeleteButton";
 
@@ -77,6 +78,17 @@ function FunctionNode({ id, data, selected }: NodeProps<FunctionNodeType>) {
           >
             FN
           </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const store = useTutorialStore.getState();
+              store.triggerSenseiHelp("sensei.topic.instructionName");
+            }}
+            className="w-5 h-5 rounded-full bg-neon-purple/20 text-neon-purple flex items-center justify-center hover:bg-neon-purple hover:text-white transition-colors"
+            title="Ask Sensei"
+          >
+            <HelpCircle size={10} />
+          </button>
           {data.connectedContext && (
             <span className="ml-auto text-[10px] font-mono text-neon-purple opacity-80">
               ctx: {data.connectedContext}

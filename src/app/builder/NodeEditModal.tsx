@@ -21,7 +21,7 @@ const AskSenseiButton = ({ topic, onAsk }: { topic: string; onAsk: (topic: strin
       e.stopPropagation();
       onAsk(topic);
     }}
-    className="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-neon-purple/20 text-neon-purple hover:bg-neon-purple hover:text-white transition-all shadow-[0_0_8px_rgba(153,69,255,0.4)]"
+    className="inline-flex items-center justify-center w-5 h-5 ml-2 rounded-full bg-neon-purple/20 text-neon-purple hover:bg-neon-purple hover:text-white transition-all shadow-[0_0_8px_rgba(153,69,255,0.4)] pointer-events-auto"
     title="Ask Solana Sensei"
   >
     <HelpCircle size={12} />
@@ -127,10 +127,10 @@ export default function NodeEditModal({ node, onClose, onSave }: NodeEditModalPr
             {(actualType === "functionNode" || actualType === "instructionNode") && (
               <div className="space-y-4">
                 <div>
-                  <label className="flex items-center text-xs font-semibold text-muted mb-1">
+                  <div className="flex items-center text-xs font-semibold text-muted mb-1">
                     {t("node.edit.instructionName")}
                     <AskSenseiButton topic="sensei.topic.instructionName" onAsk={handleAskSensei} />
-                  </label>
+                  </div>
                   <input
                     type="text"
                     value={formData.functionName || ""}
@@ -207,10 +207,10 @@ export default function NodeEditModal({ node, onClose, onSave }: NodeEditModalPr
             {/* PDA specific fields */}
             {actualType === "pdaNode" && (
               <div>
-                <label className="flex items-center text-xs font-semibold text-muted mb-1">
+                <div className="flex items-center text-xs font-semibold text-muted mb-1">
                   PDA Seeds
                   <AskSenseiButton topic="sensei.topic.pdaSeeds" onAsk={handleAskSensei} />
-                </label>
+                </div>
                 <input
                   type="text"
                   value={formData.pdaSeeds || ""}
